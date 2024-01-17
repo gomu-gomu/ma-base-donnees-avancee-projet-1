@@ -2,6 +2,23 @@
 -- 1 - En utilisant « Oracle SQL data Modeler », introduire le schéma de la base de donnée en dessous.
 -- 2 - Générer le code qui correspond à la création de ce shéma.
 
+-- 3 - Créer des tablespaces (Nombre de votre choix) pour gérer les tables. Créer aussi un tablespace Undo.
+CREATE TABLESPACE TS_PERSONNE
+DATAFILE 'ts_personne.dbf' SIZE 100M
+AUTOEXTEND ON 
+NEXT 10M MAXSIZE UNLIMITED;
+
+CREATE TABLESPACE TS_PRODUIT
+DATAFILE 'ts_personne.dbf' SIZE 100M
+AUTOEXTEND ON 
+NEXT 10M MAXSIZE UNLIMITED;
+
+CREATE TABLESPACE TS_COMMANDE
+DATAFILE 'ts_personne.dbf' SIZE 100M
+AUTOEXTEND ON 
+NEXT 10M MAXSIZE UNLIMITED;
+
+-- 4 - Créer les tables qui correspondent à ce schéma en les assignant aux tablespaces correspondants.
 CREATE TABLE CLIENTS (
     CODE_CLIENT         CHAR(5)                                         NOT NULL,
     SOCIETE             NVARCHAR2(40)                                   NOT NULL,
@@ -13,7 +30,7 @@ CREATE TABLE CLIENTS (
     FAX                 VARCHAR2(24)                                    NULL,
 
     PRIMARY KEY (CODE_CLIENT)
-);
+) TABLESPACE TS_PERSONNE;
 
 CREATE TABLE EMPLOYES (
     NO_EMPLOYE          NUMBER(6)                                       NOT NULL,
@@ -31,7 +48,7 @@ CREATE TABLE EMPLOYES (
   
     PRIMARY KEY (NO_EMPLOYE),
     FOREIGN KEY (REND_COMPTE) REFERENCES EMPLOYES(NO_EMPLOYE)
-);
+) TABLESPACE TS_PERSONNE;
 
 CREATE TABLE COMMANDES (
     NO_COMMANDE         NUMBER(6)                                     NOT NULL,
@@ -50,7 +67,7 @@ CREATE TABLE COMMANDES (
     PRIMARY KEY (NO_COMMANDE),
     FOREIGN KEY (CODE_CLIENT) REFERENCES CLIENTS(CODE_CLIENT),
     FOREIGN KEY (NO_EMPLOYE) REFERENCES EMPLOYES(NO_EMPLOYE)
-);
+) TABLESPACE TS_COMMANDE;
 
 CREATE TABLE FOURNISSEURS (
     NO_FOURNISSEUR      NUMBER(6)                                     NOT NULL,
@@ -60,10 +77,10 @@ CREATE TABLE FOURNISSEURS (
     CODE_POSTAL         VARCHAR2(10)                                  NOT NULL,
     PAYS                VARCHAR2(15)                                  NOT NULL,
     TELEPHONE           VARCHAR2(24)                                  NOT NULL,
-    FAX                 VARCHAR2(24),                                 NULL,
+    FAX                 VARCHAR2(24)                                  NULL,
 
     PRIMARY KEY (NO_FOURNISSEUR)
-);
+) TABLESPACE TS_PERSONNE;
 
 CREATE TABLE CATEGORIES (
     CODE_CATEGORIE      NUMBER(6)                                     NOT NULL,
@@ -71,7 +88,7 @@ CREATE TABLE CATEGORIES (
     DESCRIPTION         VARCHAR2(100)                                 NOT NULL,
 
     PRIMARY KEY (CODE_CATEGORIE)
-);
+) TABLESPACE TS_PRODUIT;
 
 CREATE TABLE PRODUITS (
     REF_PRODUIT         NUMBER(6)                                     NOT NULL,
@@ -87,7 +104,7 @@ CREATE TABLE PRODUITS (
     PRIMARY KEY (REF_PRODUIT),
     FOREIGN KEY (NO_FOURNISSEUR) REFERENCES FOURNISSEURS(NO_FOURNISSEUR),
     FOREIGN KEY (CODE_CATEGORIE) REFERENCES CATEGORIES(CODE_CATEGORIE)
-);
+) TABLESPACE TS_PRODUIT;
 
 CREATE TABLE DETAILS_COMMANDES (
     NO_COMMANDE         NUMBER(6)                                     NOT NULL,
@@ -101,4 +118,4 @@ CREATE TABLE DETAILS_COMMANDES (
     PRIMARY KEY (NO_COMMANDE, REF_PRODUIT),
     FOREIGN KEY (NO_COMMANDE) REFERENCES COMMANDES(NO_COMMANDE),
     FOREIGN KEY (REF_PRODUIT) REFERENCES PRODUITS(REF_PRODUIT)
-);
+) TABLESPACE TS_COMMANDE;
