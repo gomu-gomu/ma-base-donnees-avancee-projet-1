@@ -1,3 +1,3 @@
 #!/bin/sh
-docker exec eoussama/oracle-database:latest ./setPassword.sh password
-docker exec -ti eoussama/oracle-database:latest sqlplus system/password@orclpdb1
+docker exec oracle19c ./setPassword.sh password
+docker exec -ti oracle19c sqlplus system/password@orclpdb1
