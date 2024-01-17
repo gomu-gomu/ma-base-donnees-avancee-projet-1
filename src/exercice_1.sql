@@ -158,10 +158,7 @@ SELECT * FROM V$PGASTAT;
 
 -- 9 - Calculer le rapport qui correspond au Database Buffer cache.
 SELECT (1 - (PHY.value - LOB.value - DIR.value) / SES.value) * 100 AS BUFFER_CACHE_RAPPORT
-FROM   v$sysstat SES, 
-       v$sysstat LOB, 
-       v$sysstat DIR, 
-       v$sysstat PHY
+FROM v$sysstat SES, v$sysstat LOB, v$sysstat DIR, v$sysstat PHY
 WHERE  SES.name = 'session logical reads'
 AND    DIR.name = 'physical reads direct'
 AND    LOB.name = 'physical reads direct (lob)'
@@ -172,3 +169,40 @@ Select SUM(RELOADS) / (SUM(RELOADS) + Sum(PINS)) * 100 "Rapport" FROM V$libraryc
 -- Reloads: Nombre de demandes infructueuses
 -- Pins : Nombre d’exécutions sans défaut de cache
 -- il faut augmenter la taille si le résultant est >= 1%
+
+-- Affichier les tablespaces.
+SELECT TABLESPACE_NAME FROM DBA_TABLESPACES;
+
+-- Afficher l'emplacement des fichiers de stockage.
+SELECT FILE_NAME, TABLESPACE_NAME FROM DBA_DATA_FILES;
+
+-- Augmenter la taille des segments.
+ALTER TABLE EMPLOYES ALLOCATE EXTENT (SIZE 10M);
+ALTER TABLE CLIENTS ALLOCATE EXTENT (SIZE 10M);
+ALTER TABLE EMPLOYES ALLOCATE EXTENT (SIZE 10M);
+ALTER TABLE COMMANDES ALLOCATE EXTENT (SIZE 10M);
+ALTER TABLE FOURNISSEURS ALLOCATE EXTENT (SIZE 10M);
+ALTER TABLE CATEGORIES ALLOCATE EXTENT (SIZE 10M);
+ALTER TABLE PRODUITS ALLOCATE EXTENT (SIZE 10M);
+ALTER TABLE DETAILS_COMMANDES ALLOCATE EXTENT (SIZE 10M);
+
+-- Mettre un tablespace en mode offline.
+ALTER TABLESPACE TS_COMMANDE OFFLINE;
+
+-- Afficher les utilisateurs de ce shema.
+SELECT USERNAME FROM DBA_USERS WHERE DEFAULT_TABLESPACE = 'TS_PERSONNE';
+
+-- Affichier les roles associes a chaque utilisateur.
+SELECT GRANTEE, GRANTED_ROLE FROM DBA_ROLE_PRIVS;
+
+-- Affichier les profils.
+SELECT profile FROM DBA_PROFILES;
+
+-- Modifier les rôles.
+DROP ROLE ROLE_ADMN;
+CREATE ROLE ROLE_ADMN;
+GRANT SELECT ON CLIENTS TO ROLE_ADMN;
+
+-- Changer les privileges.
+REVOKE SELECT ON CLIENTS FROM ROLE_ADMN;
+GRANT INSERT ON CLIENTS TO ROLE_ADMN;
