@@ -155,3 +155,20 @@ INSERT INTO EMPLOYES (NO_EMPLOYE, NOM, PRENOM, FONCTION, TITRE, DATE_NAISSANCE, 
 -- 8 - Vérifier les mémoires SGA et PGA après l’insertion de ces enregistrements
 SELECT * FROM V$SGA;
 SELECT * FROM V$PGASTAT;
+
+-- 9 - Calculer le rapport qui correspond au Database Buffer cache.
+SELECT (1 - (PHY.value - LOB.value - DIR.value) / SES.value) * 100 AS BUFFER_CACHE_RAPPORT
+FROM   v$sysstat SES, 
+       v$sysstat LOB, 
+       v$sysstat DIR, 
+       v$sysstat PHY
+WHERE  SES.name = 'session logical reads'
+AND    DIR.name = 'physical reads direct'
+AND    LOB.name = 'physical reads direct (lob)'
+AND    PHY.name = 'physical reads';
+
+-- 10 - Vérifier s’il faut augmenter la taille du Library cache.
+Select SUM(RELOADS) / (SUM(RELOADS) + Sum(PINS)) * 100 "Rapport" FROM V$librarycache;
+-- Reloads: Nombre de demandes infructueuses
+-- Pins : Nombre d’exécutions sans défaut de cache
+-- il faut augmenter la taille si le résultant est >= 1%
