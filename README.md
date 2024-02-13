@@ -18,7 +18,7 @@ Ensure that you have previously installed and placed the Oracle Database version
 ./build.sh
 ```
 
-## 2. Run
+## 2. Start
 
 Now that the Docker image has been successfully built, you can launch a container using the `start.sh` script. This script facilitates the execution of the container, allowing you to interact with the configured Oracle Database environment.
 
@@ -26,7 +26,7 @@ Now that the Docker image has been successfully built, you can launch a containe
 ./start.sh
 ```
 
-## 3. Start
+## 3. Run
 
 Finally, Upon executing the `run.sh` script, the process will not only update the password but also seamlessly log you into an interactive **SQL*Plus** shell. This provides a convenient and secure means to interact with the Oracle Database environment, allowing for efficient management and exploration of the database functionalities.
 
